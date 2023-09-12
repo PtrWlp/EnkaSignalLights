@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@josephdadams/usbrelay": "^1.0.3"
+  }
+}
