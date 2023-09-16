@@ -11,3 +11,5 @@ npm i
 cp ./50-usbrelay.rules  /etc/udev/rules.d
 sudo udevadm control -R
 sudo usermod -a -G plugdev welp
+
+udevadm monitor
