@@ -7,23 +7,32 @@ relay.setState(0, false); // relay number 0 references all relays of the device,
 
 const heartbeat = 1000; // milliseconds, determines blink rate
 const intervalID = setInterval(setLamps, heartbeat); // heartbeat
-var allCombinations = [];
 const lampStates = ['0','1','2'];  // off/on/blinking Trinary :-)
 const lamps = [1,2,3,4];
+let startupCounter = 1;
+var allCombinations = [];
 InitializeLamps();
 
 function setLamps() {
-  let currentTime = new Date();
-  let second = (currentTime.getMinutes() * 60) + currentTime.getSeconds();
-  let blinkState = (second % 2 == 0);
+  const currentTime = new Date();
+  const second = (currentTime.getMinutes() * 60) + currentTime.getSeconds();
+
+  const blinkState = (second % 2 == 1); // Start with blink ON, evaluate avery second
+
+  // Get the combination that corresponds to the current moment in time: there will fit 97 combinations in 1 hour
+  let currentCombination = allCombinations[Math.floor(allCombinations.length/3600*second)];
+
+  // At startup, overrule the currentCombination (which is a random entry in the array) with ALL_BLINK for 6 seconds
+  if (startupCounter < 7) {
+    currentCombination = '2222';
+    startupCounter++;
+  }
 
   // At the whole hour: repopulate the light sequence but begin with All Blinking
   if (second === 0) {
     InitializeLamps();
   } 
   
-  // Get the combination that corresponds to the current moment in time: there will fit 97 combinations in 1 hour
-  const currentCombination = allCombinations[Math.floor(allCombinations.length/3600*second)];
   lamps.forEach(lamp => {
     const currentLampState = relay.getState(lamp);
     newLampState = currentCombination[lamp-1];
