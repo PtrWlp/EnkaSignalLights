@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node enka-signal-lamps.js"
+    "start": "node enka-signal-lights.js"
   },
   "dependencies": {
     "@josephdadams/usbrelay": "^1.0.3"
