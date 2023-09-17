@@ -3,7 +3,7 @@ Description=Enka Signal Lights Service
 After=network.target
 
 [Service]
-WorkingDirectory=~/EnkaSignalLights
+WorkingDirectory=home/welp/EnkaSignalLights
 ExecStart=/usr/bin/npm start
 Restart=on-failure
 User=welp
