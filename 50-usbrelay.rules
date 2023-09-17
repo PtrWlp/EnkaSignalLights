@@ -1,2 +1,2 @@
-SUBSYSTEM=="usb", ATTRS{idVendor}=="5824",ATTRS{idProduct}=="1503", MODE:="666"
-KERNEL=="hidraw*", ATTRS{idVendor}=="5824", ATTRS{idProduct}=="1503", MODE="0660", GROUP="plugdev"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="05df", MODE:="777"
+KERNEL=="hidraw*", ATTRS{idVendor}=="16c0", MODE="0666"
