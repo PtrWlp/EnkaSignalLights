@@ -1,3 +1,3 @@
 #!/bin/sh
-cd ~/EnkaSignalLights/ && npm stop
+cd /home/welp/EnkaSignalLights/ && npm stop
 systemctl stop enka-signal-lights
