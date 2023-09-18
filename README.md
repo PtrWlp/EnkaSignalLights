@@ -24,3 +24,12 @@ sudo chmod +x /usr/local/bin/stop
 
 To stop the service, run sudo systemctl stop enka-signal-lights, 
 or plain sudo stop
+
+
+Wires and connections:
+Red lamp => Red wire => plug 6
+Blue lamp => Brown wire => plug 2
+Green lamp => Green wire => plug 4
+Yellow lamp ( for led; combined red and green ) => yellow wire => plug 1
+Ground or Min ( black) => White wire => plug 3
+
