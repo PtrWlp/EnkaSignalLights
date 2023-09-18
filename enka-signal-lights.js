@@ -1,23 +1,23 @@
 const USBRelay = require("@josephdadams/usbrelay");
-// const relay = new USBRelay(); //gets the first connected relay
+const relay = new USBRelay(); //gets the first connected relay
 // MOCK FOR RELAY
-let currentState = ['-', '-', '-', '-'];
-const relay = {
-  setState(relay, state) {
-    const prevState = currentState.join('');
-    if (relay === 0) {
-      currentState = ['-', '-', '-', '-'];
-    } else {
-      currentState[relay-1] = state ? '@' : '-';
-      if (prevState !== currentState.join('')) {
-        console.log(currentState.join(''));
-      }
-    }
-  },
-  getState(relay) {
-    return true;
-  }
-};
+// let currentState = ['-', '-', '-', '-'];
+// const relay = {
+//   setState(relay, state) {
+//     const prevState = currentState.join('');
+//     if (relay === 0) {
+//       currentState = ['-', '-', '-', '-'];
+//     } else {
+//       currentState[relay-1] = state ? '@' : '-';
+//       if (prevState !== currentState.join('')) {
+//         console.log(currentState.join(''));
+//       }
+//     }
+//   },
+//   getState(relay) {
+//     return true;
+//   }
+// };
 // MOCK FOR RELAY
 
 relay.setState(0, false); // relay number 0 references all relays of the device, false is off
