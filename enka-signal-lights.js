@@ -1,34 +1,45 @@
 const USBRelay = require("@josephdadams/usbrelay");
-const relay = new USBRelay(); //gets the first connected relay
-// MOCK FOR RELAY
-// let currentState = ['-', '-', '-', '-'];
-// const relay = {
-//   setState(relay, state) {
-//     const prevState = currentState.join('');
-//     if (relay === 0) {
-//       currentState = ['-', '-', '-', '-'];
-//     } else {
-//       currentState[relay-1] = state ? '@' : '-';
-//       if (prevState !== currentState.join('')) {
-//         console.log(currentState.join(''));
-//       }
-//     }
-//   },
-//   getState(relay) {
-//     return true;
-//   }
-// };
-// MOCK FOR RELAY
+let relay;
+
+try {
+  relay = new USBRelay(); //gets the first connected relay
+  } catch (error) {
+    // MOCK FOR RELAY
+  let currentState = ['-', '-', '-', '-'];
+  relay = {
+    setState(relay, state) {
+      const prevState = currentState.join('');
+      if (relay === 0) {
+        currentState = ['-', '-', '-', '-'];
+      } else {
+        currentState[relay-1] = state ? '@' : '-';
+        if (prevState !== currentState.join('') && currentState.join('') !== '----') {
+          console.log(currentState.join(''));
+        }
+      }
+    },
+    getState(relay) {
+      return currentState[relay-1] !== '-';
+    }
+  };
+}
 
 relay.setState(0, false); // relay number 0 references all relays of the device, false is off
 
-const heartbeat = 1000; // milliseconds, determines blink rate
-const intervalID = setInterval(setLamps, heartbeat); // heartbeat
 const lampStates = ['0','1','2'];  // off/on/blinking Trinary :-)
 const lamps = [1,2,3,4];
+
+const heartbeat = 500; // milliseconds, determines blink rate
 let fireAlarm = 0; // Start with fire alarm
+let currentTick = 0; // start with fire-alarm
 var allCombinations = [];
+
 InitializeLamps();
+const numberOfHartbeatsPerHour = 3600*1000/heartbeat;
+const numberOfHeartbeatsPerCombination = numberOfHartbeatsPerHour/allCombinations.length;
+
+// Start the heartbeat
+const intervalID = setInterval(setLamps, heartbeat);
 
 function setLamps() {
   const currentTime = new Date();
@@ -37,12 +48,13 @@ function setLamps() {
   const blinkState = (second % 2 == 1); // Start with blink ON, evaluate avery second
 
   // Get the combination that corresponds to the current moment in time: there will fit 97 combinations in 1 hour
-  let currentCombination = allCombinations[Math.floor(allCombinations.length/3600*second)];
+  const currentCombination = allCombinations[Math.floor(currentTick/numberOfHeartbeatsPerCombination)];
 
   // At the whole hour: repopulate the light sequence but begin with All Blinking
   if (second === 0) {
     InitializeLamps(); // Reshuffle the sequence
     fireAlarm = 0; // At the full hour, indicate fire Alarm for half a minute
+    currentTick = 0;
   } 
   
   // At startup, overrule the currentCombination (which is a random entry in the array) with ALL_BLINK for 6 seconds
@@ -54,7 +66,7 @@ function setLamps() {
   } else {
     lamps.forEach(lamp => {
       const currentLampState = relay.getState(lamp);
-      newLampState = currentCombination[lamp-1];
+      newLampState = currentCombination[lamp-1]; // Array start with 0, lamp starts with 1
       if (newLampState === '2') {
         // Always blink
         relay.setState(lamp, blinkState);
@@ -68,6 +80,7 @@ function setLamps() {
       }
     });  
   }
+  currentTick++;
 }
 
 function InitializeLamps() {
