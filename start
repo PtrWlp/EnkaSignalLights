@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /home/welp/EnkaSignalLights/
+systemctl start enka-signal-lights.service

@@ -13,8 +13,15 @@ try {
         currentState = ['-', '-', '-', '-'];
       } else {
         currentState[relay-1] = state ? '@' : '-';
-        if (prevState !== currentState.join('') && currentState.join('') !== '----') {
-          console.log(currentState.join(''));
+        if (prevState !== currentState.join('')) {
+          // console.log(currentState.join(''));
+          process.stdout.cursorTo(0);
+          process.stdout.write(
+            (currentState[0] === '-' ? '\u001b[0m-' : '\u001b[31m@') +
+            (currentState[1] === '-' ? '\u001b[0m-' : '\u001b[32m@') +
+            (currentState[2] === '-' ? '\u001b[0m-' : '\u001b[1;34m@') +
+            (currentState[3] === '-' ? '\u001b[0m-' : '\u001b[93m@') +
+            '\u001b[0m' + '                 ');
         }
       }
     },
@@ -30,8 +37,7 @@ const lampStates = ['0','1','2'];  // off/on/blinking Trinary :-)
 const lamps = [1,2,3,4];
 
 const heartbeat = 500; // milliseconds, determines blink rate
-let fireAlarm = 0; // Start with fire alarm
-let currentTick = 0; // start with fire-alarm
+let currentTick; // A counter
 var allCombinations = [];
 
 InitializeLamps();
@@ -45,24 +51,23 @@ function setLamps() {
   const currentTime = new Date();
   const second = (currentTime.getMinutes() * 60) + currentTime.getSeconds();
 
-  const blinkState = (second % 2 == 1); // Start with blink ON, evaluate avery second
+  const blinkState = (second % 2 == 1); // Start with blink ON, evaluate every second
 
-  // Get the combination that corresponds to the current moment in time: there will fit 97 combinations in 1 hour
+  // Get the combination that corresponds to the current moment in time: there will fit 80 combinations in 1 hour
   const currentCombination = allCombinations[Math.floor(currentTick/numberOfHeartbeatsPerCombination)];
 
-  // At the whole hour: repopulate the light sequence but begin with All Blinking
+  // At the whole hour: Re-determine all possble combinations and shuffle them, but begin with fire-alarm
   if (second === 0) {
-    InitializeLamps(); // Reshuffle the sequence
-    fireAlarm = 0; // At the full hour, indicate fire Alarm for half a minute
-    currentTick = 0;
+    InitializeLamps(); 
   } 
-  
-  // At startup, overrule the currentCombination (which is a random entry in the array) with ALL_BLINK for 6 seconds
-  if (fireAlarm < 32) { // Half a minute of fire alarm
+
+  if (currentTick % numberOfHeartbeatsPerCombination > numberOfHeartbeatsPerCombination - (numberOfHeartbeatsPerCombination/10)) { // Last 10% of a combination will be dark
+    // Keep dark for a couple of seconds between every combination
+    relay.setState(0, false); 
+  } else if (currentCombination === '2222') { // Generally the first combination in the array
     // FireAlarm is alternating every lamp.
-    fireAlarm++;
-    relay.setState(0, false);
-    relay.setState(((fireAlarm - 1) % 4) + 1, true); // One of the 4 on
+    relay.setState(0, false); // All off
+    relay.setState(((currentTick - 1) % 4) + 1, true); // One of the 4 is on
   } else {
     lamps.forEach(lamp => {
       const currentLampState = relay.getState(lamp);
@@ -103,9 +108,13 @@ function InitializeLamps() {
       const j = Math.floor(Math.random() * (i + 1));
       [allCombinations[i], allCombinations[j]] = [allCombinations[j], allCombinations[i]];
   }
+  // Set fire alarm as first combi
+  allCombinations.unshift('2222');
+  // Reset the counter, start from top
+  currentTick = 0;
 }
 
-
+// Gracefully exit
 process.on('SIGINT', function() {
   console.log("\nGracefully shutting down from SIGINT (Ctrl+C)");
   relay.setState(0, false);
