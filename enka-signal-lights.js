@@ -11,6 +11,8 @@ try {
       const prevState = currentState.join('');
       if (relay === 0) {
         currentState = ['-', '-', '-', '-'];
+        process.stdout.cursorTo(0);
+          process.stdout.write('\u001b[0m' + '----             ');
       } else {
         currentState[relay-1] = state ? '@' : '-';
         if (prevState !== currentState.join('')) {
@@ -41,7 +43,7 @@ let currentTick; // A counter
 var allCombinations = [];
 
 InitializeLamps();
-const numberOfHartbeatsPerHour = 3600*1000/heartbeat;
+const numberOfHartbeatsPerHour = 3600*1000/heartbeat/4;
 const numberOfHeartbeatsPerCombination = numberOfHartbeatsPerHour/allCombinations.length;
 
 // Start the heartbeat
@@ -50,7 +52,7 @@ const intervalID = setInterval(setLamps, heartbeat);
 function setLamps() {
   const currentTime = new Date();
   const second = (currentTime.getMinutes() * 60) + currentTime.getSeconds();
-
+  
   const blinkState = (second % 2 == 1); // Start with blink ON, evaluate every second
 
   // Get the combination that corresponds to the current moment in time: there will fit 80 combinations in 1 hour
@@ -61,7 +63,9 @@ function setLamps() {
     InitializeLamps(); 
   } 
 
-  if (currentTick % numberOfHeartbeatsPerCombination > numberOfHeartbeatsPerCombination - (numberOfHeartbeatsPerCombination/10)) { // Last 10% of a combination will be dark
+  // console.log('biddie', currentTick % numberOfHeartbeatsPerCombination, currentTick, numberOfHeartbeatsPerCombination);
+
+  if (currentTick % numberOfHeartbeatsPerCombination > numberOfHeartbeatsPerCombination - 3) { // Last 1.5 seconds of a combination will be dark
     // Keep dark for a couple of seconds between every combination
     relay.setState(0, false); 
   } else if (currentCombination === '2222') { // Generally the first combination in the array
