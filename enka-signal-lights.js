@@ -48,9 +48,6 @@ const cyclesPerHour = 3;
 const numberOfHartbeatsPerCycle = numberOfHartbeatsPerHour/cyclesPerHour;
 const numberOfHeartbeatsPerCombination = numberOfHartbeatsPerCycle/allCombinations.length;
 
-console.log(numberOfHartbeatsPerCycle, numberOfHeartbeatsPerCombination, allCombinations.length);
-console.log('calculating length of 1 combi', numberOfHeartbeatsPerCombination*heartbeat/1000);
-
 // Start the heartbeat
 const intervalID = setInterval(setLamps, heartbeat);
 
@@ -63,12 +60,10 @@ function setLamps() {
   // Get the combination that corresponds to the current moment in time: there will fit 80 combinations in 1 hour
   const currentCombination = allCombinations[Math.floor(currentTick/numberOfHeartbeatsPerCombination)];
 
-  // At evry 20 minutes starting with the whole hour: Re-determine all possble combinations and shuffle them, but begin with fire-alarm
+  // At every 20 minutes starting with the whole hour: Re-determine all possble combinations and shuffle them, but begin with fire-alarm
   if ([0, 60*20, 60*40].includes(second)) {
     InitializeLamps(); 
   } 
-
-  // console.log('biddie', currentTick % numberOfHeartbeatsPerCombination, currentTick, numberOfHeartbeatsPerCombination);
 
   if (currentTick % numberOfHeartbeatsPerCombination > numberOfHeartbeatsPerCombination - 3) { // Last 1.5 seconds of a combination will be dark
     // Keep dark for a couple of seconds between every combination
