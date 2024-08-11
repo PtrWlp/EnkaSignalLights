@@ -43,8 +43,13 @@ let currentTick; // A counter
 var allCombinations = [];
 
 InitializeLamps();
-const numberOfHartbeatsPerHour = 3600*1000/heartbeat/4;
-const numberOfHeartbeatsPerCombination = numberOfHartbeatsPerHour/allCombinations.length;
+const numberOfHartbeatsPerHour = 3600*1000/heartbeat;
+const cyclesPerHour = 3;
+const numberOfHartbeatsPerCycle = numberOfHartbeatsPerHour/cyclesPerHour;
+const numberOfHeartbeatsPerCombination = numberOfHartbeatsPerCycle/allCombinations.length;
+
+console.log(numberOfHartbeatsPerCycle, numberOfHeartbeatsPerCombination, allCombinations.length);
+console.log('calculating length of 1 combi', numberOfHeartbeatsPerCombination*heartbeat/1000);
 
 // Start the heartbeat
 const intervalID = setInterval(setLamps, heartbeat);
@@ -58,8 +63,8 @@ function setLamps() {
   // Get the combination that corresponds to the current moment in time: there will fit 80 combinations in 1 hour
   const currentCombination = allCombinations[Math.floor(currentTick/numberOfHeartbeatsPerCombination)];
 
-  // At the whole hour: Re-determine all possble combinations and shuffle them, but begin with fire-alarm
-  if (second === 0) {
+  // At evry 20 minutes starting with the whole hour: Re-determine all possble combinations and shuffle them, but begin with fire-alarm
+  if ([0, 60*20, 60*40].includes(second)) {
     InitializeLamps(); 
   } 
 
